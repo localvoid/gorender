@@ -45,7 +45,7 @@ func main() {
 	tpl, err := template.ParseFiles(templates...)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
+		os.Exit(65)
 	}
 
 	raw, err := ioutil.ReadFile(*dataPath)
