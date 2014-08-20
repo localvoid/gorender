@@ -1,6 +1,8 @@
 # gorender
 
-> CLI util to render files with [Go](http://golang.org) [text.template](http://golang.org/pkg/text/template/) template engine.
+> CLI util to render templates with [Go](http://golang.org)
+> [text.Template](http://golang.org/pkg/text/template/) template
+> engine.
 
 ## Install
 
