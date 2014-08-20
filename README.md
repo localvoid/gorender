@@ -15,3 +15,20 @@ $ go install github.com/localvoid/gorender
 ```sh
 $ gorender -d data.json template.txt
 ```
+
+## Flags
+
+### -d [file]
+
+Type: `String`
+Default: `data.json`
+
+Data file in JSON format.
+
+### -html
+
+Type: `Boolean`  
+Default: `false`
+
+Use [html.Template](http://golang.org/pkg/text/template/) package to
+render templates.

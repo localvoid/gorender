@@ -4,12 +4,14 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	htmlTemplate "html/template"
 	"io/ioutil"
 	"os"
-	"text/template"
+	textTemplate "text/template"
 )
 
 var dataPath = flag.String("d", "data.json", "JSON data file")
+var useHtml = flag.Bool("html", false, "use `html.Template`")
 
 func usage() {
 	fmt.Fprintf(os.Stderr, "usage: gorender -d [datafile] [templates...] \n\n")
@@ -42,7 +44,15 @@ func main() {
 		os.Exit(66)
 	}
 
-	tpl, err := template.ParseFiles(templates...)
+	var tpl interface{}
+	var err error
+
+	if *useHtml {
+		tpl, err = htmlTemplate.ParseFiles(templates...)
+	} else {
+		tpl, err = textTemplate.ParseFiles(templates...)
+	}
+
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(65)
@@ -62,7 +72,14 @@ func main() {
 		os.Exit(65)
 	}
 
-	err = tpl.Execute(os.Stdout, data)
+	if *useHtml {
+		t := tpl.(*htmlTemplate.Template)
+		err = t.Execute(os.Stdout, data)
+	} else {
+		t := tpl.(*textTemplate.Template)
+		err = t.Execute(os.Stdout, data)
+	}
+
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(65)
