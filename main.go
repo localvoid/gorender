@@ -10,8 +10,12 @@ import (
 	textTemplate "text/template"
 )
 
-var dataPath = flag.String("d", "data.json", "JSON data file")
-var useHtml = flag.Bool("html", false, "use `html.Template`")
+var (
+	dataPath = flag.String("d", "data.json", "JSON data file")
+	include  = flag.String("i", "", "Include templates")
+	baseName = flag.String("b", "", "Base template name")
+	useHtml  = flag.Bool("html", false, "use html.Template package for rendering")
+)
 
 func usage() {
 	fmt.Fprintf(os.Stderr, "usage: gorender -d [datafile] [templates...] \n\n")
@@ -58,6 +62,21 @@ func main() {
 		os.Exit(65)
 	}
 
+	if len(*include) > 0 {
+		if *useHtml {
+			t := tpl.(*htmlTemplate.Template)
+			tpl, err = t.ParseGlob(*include)
+		} else {
+			t := tpl.(*textTemplate.Template)
+			tpl, err = t.ParseGlob(*include)
+		}
+	}
+
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(65)
+	}
+
 	raw, err := ioutil.ReadFile(*dataPath)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -74,10 +93,18 @@ func main() {
 
 	if *useHtml {
 		t := tpl.(*htmlTemplate.Template)
-		err = t.Execute(os.Stdout, data)
+		if len(*baseName) > 0 {
+			err = t.ExecuteTemplate(os.Stdout, *baseName, data)
+		} else {
+			err = t.Execute(os.Stdout, data)
+		}
 	} else {
 		t := tpl.(*textTemplate.Template)
-		err = t.Execute(os.Stdout, data)
+		if len(*baseName) > 0 {
+			err = t.ExecuteTemplate(os.Stdout, *baseName, data)
+		} else {
+			err = t.Execute(os.Stdout, data)
+		}
 	}
 
 	if err != nil {
