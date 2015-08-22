@@ -20,7 +20,6 @@ $ gorender -d data.json template.txt
 ### -d [file]
 
 Type: `String`  
-Default: `data.json`
 
 Data file in JSON format.
 
